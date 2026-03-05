@@ -12,6 +12,7 @@ For now, we've added includes support for:
 - ZTE (F677V2, F477V2)
 - CIOT (MQ220, GM220-S)
 - CMCC devices
+- TP-Link (XC220-G3)
 . Others will follow as they have the devices. This repo will continue to be updated as the situation allows.
 
 

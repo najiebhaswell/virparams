@@ -2,10 +2,10 @@ let result = '';
 
 function getParameterValue(keys) {
     for (let key of keys) {
-        let keyConnType = declare(key.replace('ExternalIPAddress', 'ConnectionType'), {value: Date.now()});
-        let keyNat = declare(key.replace('ExternalIPAddress', 'NATEnabled'), {value: Date.now()});
-        if ((keyConnType.size && keyNat.size && keyConnType.value[0] === 'PPPoE_Routed' || keyConnType.size && keyNat.size && keyConnType.value[0] === 'IP_Routed' || keyConnType.size && keyNat.size && keyConnType.value[0] === 'PPPoE') && (keyNat.value[0] === true || (typeof keyNat.value[0] === "string" && keyNat.value[0].toLowerCase() === "true"))){
-            return declare(key, {value: Date.now()}).value[0];
+        let keyConnType = declare(key.replace('ExternalIPAddress', 'ConnectionType'), { value: Date.now() });
+        let keyNat = declare(key.replace('ExternalIPAddress', 'NATEnabled'), { value: Date.now() });
+        if ((keyConnType.size && keyNat.size && keyConnType.value[0] === 'PPPoE_Routed' || keyConnType.size && keyNat.size && keyConnType.value[0] === 'IP_Routed' || keyConnType.size && keyNat.size && keyConnType.value[0] === 'PPPoE') && (keyNat.value[0] === true || (typeof keyNat.value[0] === "string" && keyNat.value[0].toLowerCase() === "true"))) {
+            return declare(key, { value: Date.now() }).value[0];
         }
     }
     return 'N/A';
@@ -26,6 +26,14 @@ if ("value" in args[1]) {
     ];
 
     result = getParameterValue(keys);
+
+    // If TR-098 failed, try TR-181 (TP-Link)
+    if (result === 'N/A') {
+        let pppIp = declare('Device.PPP.Interface.1.IPCP.LocalIPAddress', { value: Date.now() });
+        if (pppIp.size && pppIp.value && pppIp.value[0]) {
+            result = pppIp.value[0];
+        }
+    }
 }
 
-return {writable: false, value: [result, "xsd:string"]};
+return { writable: false, value: [result, "xsd:string"] };

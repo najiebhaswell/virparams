@@ -1,7 +1,15 @@
 let uptime = 0;
-let res = declare("InternetGatewayDevice.DeviceInfo.UpTime", {path: Date.now() - (120 * 1000), value: Date.now()});
 
-uptime = res.value[0]
+// Try TR-098 first, then TR-181
+let res = declare("InternetGatewayDevice.DeviceInfo.UpTime", { path: Date.now() - (120 * 1000), value: Date.now() });
+if (res.size && res.value && res.value[0]) {
+  uptime = res.value[0];
+} else {
+  let res181 = declare("Device.DeviceInfo.UpTime", { path: Date.now() - (120 * 1000), value: Date.now() });
+  if (res181.size && res181.value && res181.value[0]) {
+    uptime = res181.value[0];
+  }
+}
 
 // Time units in seconds
 const SEC = 1;

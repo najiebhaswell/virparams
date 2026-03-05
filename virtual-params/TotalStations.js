@@ -7,7 +7,8 @@ let keys = [
     'InternetGatewayDevice.LANDevice.1.WLANConfiguration.*.X_ZTE-COM_TotalAssociations', // ZTE Alt
     'InternetGatewayDevice.LANDevice.1.WLANConfiguration.*.X_Tenda_AssociatedDeviceCount', // Tenda (Hypothetical)
     'Device.WiFi.SSID.*.Stats.Associations', // TR-181
-    'InternetGatewayDevice.LANDevice.1.WLANConfiguration.*.X_ALU_AssociatedDeviceNumberOfEntries' // Nokia/ALU
+    'InternetGatewayDevice.LANDevice.1.WLANConfiguration.*.X_ALU_AssociatedDeviceNumberOfEntries', // Nokia/ALU
+    'Device.WiFi.AccessPoint.*.AssociatedDeviceNumberOfEntries' // TR-181 TP-Link
 ];
 
 result = getParameterValue(keys);
@@ -15,7 +16,7 @@ result = getParameterValue(keys);
 function getParameterValue(keys) {
     let total = 0;
     for (let key of keys) {
-        let d = declare(key, {path: Date.now() - (120 * 1000), value: Date.now()});
+        let d = declare(key, { path: Date.now() - (120 * 1000), value: Date.now() });
         for (let item of d) {
             if (item.value && !isNaN(parseInt(item.value[0]))) {
                 total += parseInt(item.value[0]);
@@ -25,4 +26,4 @@ function getParameterValue(keys) {
     return total;
 }
 
-return {writable: false, value: [result, "xsd:int"]};
+return { writable: false, value: [result, "xsd:int"] };

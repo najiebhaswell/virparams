@@ -1,11 +1,23 @@
 // Mac Address PON
 let m = "";
-let mac1 = declare("InternetGatewayDevice.DeviceInfo.X_CU_SerialNumber", {value: Date.now()});
-let mac2 = declare("InternetGatewayDevice.LANDevice.1.LANHostConfigManagement.MACAddress", {value: Date.now()});
-let mac3 = declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.MACAddress", {value: Date.now()});
+let mac1 = declare("InternetGatewayDevice.DeviceInfo.X_CU_SerialNumber", { value: Date.now() });
+let mac2 = declare("InternetGatewayDevice.LANDevice.1.LANHostConfigManagement.MACAddress", { value: Date.now() });
+let mac3 = declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.MACAddress", { value: Date.now() });
 
-let manufacturer = declare("DeviceID.Manufacturer", {value: Date.now()});
-if (manufacturer.value[0] == "ZIONCOM") {
+let manufacturer = declare("DeviceID.Manufacturer", { value: Date.now() });
+
+if (manufacturer.value[0] == "TP-Link") {
+  // TP-Link TR-181 MAC
+  let tpmac = declare("Device.DeviceInfo.X_TP_MACAddress", { value: Date.now() });
+  if (tpmac.size && tpmac.value[0]) {
+    m = tpmac.value[0];
+  } else {
+    let ethmac = declare("Device.Ethernet.Interface.1.MACAddress", { value: Date.now() });
+    if (ethmac.size && ethmac.value[0]) {
+      m = ethmac.value[0];
+    }
+  }
+} else if (manufacturer.value[0] == "ZIONCOM") {
   for (let p of mac3) {
     if (p.value[0]) {
       m = p.value[0];
@@ -29,4 +41,4 @@ if (manufacturer.value[0] == "ZIONCOM") {
 }
 
 
-return {writable: false, value: [m, "xsd:string"]};
+return { writable: false, value: [m, "xsd:string"] };

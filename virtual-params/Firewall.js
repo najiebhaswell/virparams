@@ -13,18 +13,20 @@ let paths = [
   // CIOT / CT-COM
   "InternetGatewayDevice.X_CT-COM_Security.FirewallLevel",
   // Generic
-  "Device.Firewall.Level"
+  "Device.Firewall.Level",
+  // TP-Link
+  "Device.Firewall.Config"
 ];
 
 if (args[1].value) {
   m = args[1].value[0];
   for (let p of paths) {
-    try { declare(p, null, {value: m}); } catch(e) {}
+    try { declare(p, null, { value: m }); } catch (e) { }
   }
 }
 else {
   for (let p of paths) {
-    let d = declare(p, {value: Date.now()});
+    let d = declare(p, { value: Date.now() });
     if (d.size && d.value[0]) {
       m = String(d.value[0]);
       break;
@@ -33,4 +35,4 @@ else {
   if (!m) { writable = false; m = "N/A"; }
 }
 
-return {writable: writable, value: [m, "xsd:string"]};
+return { writable: writable, value: [m, "xsd:string"] };
