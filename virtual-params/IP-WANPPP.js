@@ -1,4 +1,5 @@
 let result = '';
+let manufacturer = declare("DeviceID.Manufacturer", { value: 1 }).value[0];
 
 function getParameterValue(keys) {
     for (let key of keys) {
@@ -13,6 +14,14 @@ function getParameterValue(keys) {
 
 if ("value" in args[1]) {
     result = args[1].value[0];
+} else if (manufacturer === "TP-Link") {
+    // TR-181 TP-Link: get PPP IP directly
+    let pppIp = declare('Device.PPP.Interface.1.IPCP.LocalIPAddress', { value: Date.now() });
+    if (pppIp.size && pppIp.value && pppIp.value[0]) {
+        result = pppIp.value[0];
+    } else {
+        result = 'N/A';
+    }
 } else {
     let keys = [
         'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.ExternalIPAddress',
@@ -26,14 +35,6 @@ if ("value" in args[1]) {
     ];
 
     result = getParameterValue(keys);
-
-    // If TR-098 failed, try TR-181 (TP-Link)
-    if (result === 'N/A') {
-        let pppIp = declare('Device.PPP.Interface.1.IPCP.LocalIPAddress', { value: Date.now() });
-        if (pppIp.size && pppIp.value && pppIp.value[0]) {
-            result = pppIp.value[0];
-        }
-    }
 }
 
 return { writable: false, value: [result, "xsd:string"] };

@@ -1,4 +1,5 @@
 let result = '';
+let manufacturer = declare("DeviceID.Manufacturer", { value: 1 }).value[0];
 
 function getParameterValue(keys) {
     for (let key of keys) {
@@ -13,16 +14,7 @@ function getParameterValue(keys) {
     return "❌";
 }
 
-// Check TR-098 first
-let tr098Wan = declare("InternetGatewayDevice.WANDevice.1.WANCommonInterfaceConfig.WANAccessType", { value: 1 });
-if (tr098Wan.size && tr098Wan.value && tr098Wan.value[0] && tr098Wan.value[0] != "Ethernet") {
-    let keys = [
-        'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.*.WANPPPConnection.*.ConnectionType',
-        'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.*.WANIPConnection.*.ConnectionType'
-    ];
-
-    result = getParameterValue(keys);
-} else {
+if (manufacturer === "TP-Link") {
     // TR-181 TP-Link — check if any IP.Interface has bridge mode
     let tpConnTypes = declare("Device.IP.Interface.*.X_TP_ConnType", { value: Date.now() });
     let hasBridge = false;
@@ -36,6 +28,17 @@ if (tr098Wan.size && tr098Wan.value && tr098Wan.value[0] && tr098Wan.value[0] !=
         result = "✅";
     } else if (tpConnTypes.size) {
         result = "❌";
+    } else {
+        result = "❓";
+    }
+} else {
+    let tr098Wan = declare("InternetGatewayDevice.WANDevice.1.WANCommonInterfaceConfig.WANAccessType", { value: 1 });
+    if (tr098Wan.size && tr098Wan.value && tr098Wan.value[0] && tr098Wan.value[0] != "Ethernet") {
+        let keys = [
+            'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.*.WANPPPConnection.*.ConnectionType',
+            'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.*.WANIPConnection.*.ConnectionType'
+        ];
+        result = getParameterValue(keys);
     } else {
         result = "❓";
     }
