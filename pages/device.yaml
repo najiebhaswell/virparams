@@ -1174,6 +1174,36 @@
         - label: "'Binding'"
           parameter: X_FH_LanInterface
 - filter: >
+          VirtualParameters.WANParameterModel = "TP-Link"
+  type: "'container'"
+  components:
+    - chart: "'online-short'"
+      type: "'overview-dot'"
+    - type: "'summon-button'"
+      parameters:
+        - Device.PPP.Interface.*.*
+        - Device.PPP.Interface.*.IPCP.*
+        - Device.PPP.Interface.*.PPPoE.*
+    - parameter: Device.PPP.Interface
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Enable'"
+          parameter: Enable
+        - label: "'Status'"
+          parameter: ConnectionStatus
+        - label: "'Username'"
+          parameter: Username
+        - label: "'Password'"
+          parameter: Password
+        - label: "'IP Address'"
+          parameter: IPCP.LocalIPAddress
+        - label: "'DNS'"
+          parameter: IPCP.DNSServers
+        - label: "'PPPoE ACName'"
+          parameter: PPPoE.ACName
+        - label: "'PPPoE SessionID'"
+          parameter: PPPoE.SessionID
+- filter: >
           VirtualParameters.WANParameterModel = "Other"
   type: "'container'"
   components:
