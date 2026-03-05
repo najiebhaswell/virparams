@@ -23,11 +23,14 @@
       parameters:
         - InternetGatewayDevice.DeviceInfo.HardwareVersion
         - InternetGatewayDevice.DeviceInfo.SoftwareVersion
+        - Device.DeviceInfo.HardwareVersion
+        - Device.DeviceInfo.SoftwareVersion
         - VirtualParameters.OpticalRXPower
         - VirtualParameters.OpticalTemperature
         - VirtualParameters.DeviceUptime
         - VirtualParameters.KnownManufacturer
         - VirtualParameters.KnownProductClass
+        - VirtualParameters.AccessType
         - InternetGatewayDevice.WANDevice.1.WANCommonInterfaceConfig.WANAccessType
 - type: "'parameter-list'"
   parameters:
@@ -59,7 +62,7 @@
     - label: "'Serial number'"
       parameter: DeviceID.SerialNumber
     - label: "'Access Type'"
-      parameter: InternetGatewayDevice.WANDevice.1.WANCommonInterfaceConfig.WANAccessType
+      parameter: VirtualParameters.AccessType
     - label: "'Device Uptime'"
       parameter: VirtualParameters.DeviceUptime
     - element: "'span.inform'"
@@ -625,6 +628,31 @@
           parameter: ConnectionType
         - label: "'Binding'"
           parameter: X_FH_LanInterface
+- filter: >
+          VirtualParameters.WANParameterModel = "TP-Link"
+  type: "'container'"
+  components:
+    - chart: "'online-short'"
+      type: "'overview-dot'"
+    - type: "'summon-button'"
+      parameters:
+        - Device.IP.Interface.*.*
+        - Device.IP.Interface.*.IPv4Address.*.*
+    - parameter: Device.IP.Interface
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Enable'"
+          parameter: Enable
+        - label: "'Status'"
+          parameter: Status
+        - label: "'Type'"
+          parameter: X_TP_ConnType
+        - label: "'IPv4 Address'"
+          parameter: IPv4Address.1.IPAddress
+        - label: "'Subnet Mask'"
+          parameter: IPv4Address.1.SubnetMask
+        - label: "'Lower Layers'"
+          parameter: LowerLayers
 - filter: >
           VirtualParameters.WANParameterModel = "Other"
   type: "'container'"
@@ -1270,7 +1298,10 @@
       type: "'container'"
       components:
         - "'🛜 WLAN & LAN'"
-- type: "'container'"
+# TR-098 WLAN & LAN
+- filter: >
+          VirtualParameters.WANParameterModel != "TP-Link"
+  type: "'container'"
   components:
     - chart: "'online-short'"
       type: "'overview-dot'"
@@ -1281,37 +1312,97 @@
         - InternetGatewayDevice.LANDevice.*.Hosts.Host.*.HostName
         - InternetGatewayDevice.LANDevice.*.Hosts.Host.*.IPAddress
         - InternetGatewayDevice.LANDevice.*.Hosts.Host.*.MACAddress
-- parameter: InternetGatewayDevice.LANDevice.1.WLANConfiguration
-  type: "'parameter-table'"
-  childParameters:
-    - label: "'Enabled'"
-      parameter: Enable
-    - label: "'SSID'"
-      parameter: SSID
-    - label: "'Password'"
-      parameter: KeyPassphrase
-    - label: "'Security'"
-      parameter: BeaconType
-    - label: "'Stations'"
-      parameter: TotalAssociations
-- parameter: InternetGatewayDevice.LANDevice.1.LANEthernetInterfaceConfig
-  type: "'parameter-table'"
-  childParameters:
-    - label: "'Enabled'"
-      parameter: Enable
-    - label: "'Status'"
-      parameter: Status
-    - label: "'Max Bitrate'"
-      parameter: MaxBitRate
-- parameter: InternetGatewayDevice.LANDevice.1.Hosts.Host
-  type: "'parameter-table'"
-  childParameters:
-    - label: "'Host name'"
-      parameter: HostName
-    - label: "'IP address'"
-      parameter: IPAddress
-    - label: "'MAC address'"
-      parameter: MACAddress
+- filter: >
+          VirtualParameters.WANParameterModel != "TP-Link"
+  type: "'container'"
+  components:
+    - parameter: InternetGatewayDevice.LANDevice.1.WLANConfiguration
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Enabled'"
+          parameter: Enable
+        - label: "'SSID'"
+          parameter: SSID
+        - label: "'Password'"
+          parameter: KeyPassphrase
+        - label: "'Security'"
+          parameter: BeaconType
+        - label: "'Stations'"
+          parameter: TotalAssociations
+    - parameter: InternetGatewayDevice.LANDevice.1.LANEthernetInterfaceConfig
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Enabled'"
+          parameter: Enable
+        - label: "'Status'"
+          parameter: Status
+        - label: "'Max Bitrate'"
+          parameter: MaxBitRate
+    - parameter: InternetGatewayDevice.LANDevice.1.Hosts.Host
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Host name'"
+          parameter: HostName
+        - label: "'IP address'"
+          parameter: IPAddress
+        - label: "'MAC address'"
+          parameter: MACAddress
+# TP-Link TR-181 WLAN & LAN
+- filter: >
+          VirtualParameters.WANParameterModel = "TP-Link"
+  type: "'container'"
+  components:
+    - chart: "'online-short'"
+      type: "'overview-dot'"
+    - type: "'summon-button'"
+      parameters:
+        - Device.WiFi.SSID.*.*
+        - Device.WiFi.AccessPoint.*.Security.*
+        - Device.WiFi.AccessPoint.*.AssociatedDeviceNumberOfEntries
+        - Device.Ethernet.Interface.*.*
+        - Device.Hosts.Host.*.*
+    - parameter: Device.WiFi.SSID
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Enable'"
+          parameter: Enable
+        - label: "'SSID'"
+          parameter: SSID
+        - label: "'BSSID'"
+          parameter: BSSID
+    - parameter: Device.WiFi.AccessPoint
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Enable'"
+          parameter: Enable
+        - label: "'Security Mode'"
+          parameter: Security.ModeEnabled
+        - label: "'Password'"
+          parameter: Security.KeyPassphrase
+        - label: "'Stations'"
+          parameter: AssociatedDeviceNumberOfEntries
+    - parameter: Device.Ethernet.Interface
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Enable'"
+          parameter: Enable
+        - label: "'Status'"
+          parameter: Status
+        - label: "'MAC Address'"
+          parameter: MACAddress
+        - label: "'Max Bitrate'"
+          parameter: MaxBitRate
+    - parameter: Device.Hosts.Host
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Host name'"
+          parameter: HostName
+        - label: "'IP address'"
+          parameter: IPAddress
+        - label: "'MAC address'"
+          parameter: PhysAddress
+        - label: "'Active'"
+          parameter: Active
 - element: '"div"'
   type: "'container'"
   components:
